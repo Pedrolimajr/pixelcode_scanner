@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>PixelCode Scanner — Visual UI (Mock)</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="toastContainer" class="toast-container"></div>
+<div class="wrap">
+  <header class="app">
+    <div class="brand">
+      <div class="logo">PC</div>
+      <div>
+        <h1>PixelCode Scanner</h1>
+        <div class="subtitle">Dark · Visual</div>
+      </div>
+    </div>
+    <div class="muted small">Modo: <strong>Visual (mock)</strong></div>
+  </header>
+
+  <main class="card">
+    <div class="controls">
+      <div class="grid-2">
+        <div>
+          <label for="host">Host (apenas referência)</label>
+          <input id="host" type="text" placeholder="https://seu-painel.exemplo" value="https://api.local"/>
+        </div>
+        <div>
+          <label for="concurrency">Bots (1-100)</label>
+          <input id="concurrency" type="range" min="1" max="100" value="6"/>
+          <div class="right small muted"><span id="concurrencyValue">6</span> Bots</div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div style="flex:1">
+          <label for="combos">Arquivo .txt (usuario:senha)</label>
+          <input id="combos" type="file" accept=".txt"/>
+        </div>
+        <div style="width:140px">
+          <label class="small">Ações rápidas</label>
+          <div style="display:flex; flex-direction:column; gap:8px">
+            <button id="loadFileBtn" class="btn btn-ghost">📥 Carregar</button>
+            <button id="pasteBtn" class="btn btn-ghost">📎 Colar</button>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <label for="combosText">Ou cole os combos aqui (uma linha por combo)</label>
+        <textarea id="combosText" placeholder="ex: demo:1234"></textarea>
+      </div>
+
+      <div style="display:flex; gap:10px; align-items:center; margin-top:6px">
+        <button id="startBtn" class="btn btn-primary pulse">▶ Iniciar (visual)</button>
+        <button id="stopBtn" class="btn btn-ghost">■ Parar</button>
+        <button id="clearBtn" class="btn btn-danger">🧹 Limpar</button>
+        <button id="copyAllBtn" class="btn btn-ghost">📋 Copiar Todos</button>
+        <div style="flex:1"></div>
+        <div class="small muted">Status: <strong id="statusLabel">Pronto</strong></div>
+      </div>
+    </div>
+  </main>
+
+  <aside class="sidebar">
+    <div class="stat"><div class="label">Total</div><div id="totalCount" class="value">0</div></div>
+    <div class="stat"><div class="label">Hits</div><div id="hitsCount" class="value">0</div></div>
+    <div class="stat"><div class="label">Erros</div><div id="errorsCount" class="value">0</div></div>
+    <div class="stat"><div class="label">Req/s</div><div id="speedCount" class="value">0</div></div>
+    <div class="stat"><div class="label">Bots Ativos</div><div id="workersCount" class="value">0</div></div>
+    <div class="stat"><div class="label">Restantes</div><div id="remainingCount" class="value">0</div></div>
+
+    <div style="margin-top:8px">
+      <div class="small muted">Progresso</div>
+      <div class="progress" style="margin-top:8px"><span id="progressBar"></span></div>
+      <div class="small muted right" style="margin-top:4px"><span id="progressPercent">0%</span></div>
+    </div>
+
+    <div class="filters">
+      <div class="small">Filtros</div>
+      <input id="filterText" type="text" placeholder="Pesquisar (usuário, senha, host)"/>
+      <div style="display:flex; gap:8px">
+        <select id="filterStatus" style="flex:1">
+          <option value="any">Status: Qualquer</option>
+          <option value="Active">Active</option>
+          <option value="Expired">Expired</option>
+        </select>
+        <input id="filterMinConn" type="number" min="0" placeholder="Min conexões" style="width:120px"/>
+      </div>
+      <div style="display:flex; gap:8px;">
+        <button id="applyFiltersBtn" class="btn btn-ghost" style="flex:1">Aplicar</button>
+        <button id="resetFiltersBtn" class="btn btn-ghost" style="flex:1">Reset</button>
+      </div>
+
+      <div style="display:flex; gap:8px; margin-top:6px;">
+        <button id="exportCsvBtn" class="btn btn-primary" style="flex:1">⬇ CSV</button>
+        <button id="exportTxtBtn" class="btn btn-primary" style="flex:1">⬇ TXT</button>
+      </div>
+
+      <div style="display:flex; gap:8px; margin-top:6px;">
+        <button id="saveLocalBtn" class="btn btn-ghost" style="flex:1">💾 Salvar local</button>
+        <button id="loadLocalBtn" class="btn btn-ghost" style="flex:1">📂 Carregar</button>
+      </div>
+    </div>
+  </aside>
+
+  <section class="results-wrap">
+    <div class="results-header card">
+      <div>
+        <strong>Resultados</strong>
+        <div class="small muted">Visual UI</div>
+      </div>
+      <div class="small muted">Clique em copiar por hit para copiar apenas aquele resultado</div>
+    </div>
+
+    <div id="results" class="results card"></div>
+  </section>
+</div>
+
+<footer class="footer">
+  <div class="footer-content">
+    <div class="footer-left">
+      <p>PixelCode Scanner <span class="version">v1.0</span></p>
+      <p class="footer-desc">Visual UI</p>
+    </div>
+    <div class="footer-center">
+      <p>🔧 Desenvolvido por <strong>Pedro Júnior</strong></p>
+    </div>
+    <div class="footer-right">
+      <p><span class="year">© 2025</span> • Todos os direitos reservados</p>
+    </div>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
