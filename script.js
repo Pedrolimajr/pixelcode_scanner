@@ -115,6 +115,12 @@
         statusLabel.textContent = 'Parado pelo usuário';
         startBtn.disabled = false;
         stopBtn.disabled = true;
+        // Renderiza dados parciais que foram processados
+        if(allHits.length > 0) {
+          allHits = allHits.reverse();
+          renderResults();
+          updateStats();
+        }
         showToast('Processamento interrompido', 'info');
         return;
       }
@@ -166,7 +172,15 @@
     startBtn.disabled = false;
     stopBtn.disabled = true;
     statusLabel.textContent = 'Parado pelo usuário';
-    showToast('Processamento interrompido', 'info');
+    // Renderiza os dados que foram processados até o momento
+    if(allHits.length > 0) {
+      allHits = allHits.reverse();
+      renderResults();
+      updateStats();
+      showToast(`Processamento interrompido. ${allHits.length} combo(s) carregado(s).`, 'info');
+    } else {
+      showToast('Processamento interrompido sem dados', 'info');
+    }
   }
 
   function onClear(){
