@@ -110,11 +110,12 @@
     // Simulação de carregamento com progresso de 0 a 100%
     const total = lines.length;
     for(let idx = 0; idx < total; idx++) {
-      // Verifica se foi solicitado parar
+      // Verifica se foi solicitado parar - interrompe ANTES de processar
       if(!isProcessing) {
         statusLabel.textContent = 'Parado pelo usuário';
         startBtn.disabled = false;
         stopBtn.disabled = true;
+        showToast('Processamento interrompido', 'info');
         return;
       }
       
@@ -142,6 +143,7 @@
       await sleep(15);
     }
     
+    // Só finaliza se ainda estiver processando (não foi parado)
     if(isProcessing) {
       allHits = allHits.reverse();
       renderResults();
@@ -151,6 +153,7 @@
       isProcessing = false;
       startBtn.disabled = false;
       stopBtn.disabled = true;
+      showToast('Carregamento concluído!', 'success');
     }
   }
 
