@@ -6,6 +6,7 @@
 (() => {
   // state
   let allHits = []; // store formatted entries (visual only)
+  let isProcessing = false; // controle de parada
 
   // Toast notification function
   function showToast(message, type = 'info') {
@@ -39,6 +40,7 @@
   const workersCount = document.getElementById('workersCount');
   const remainingCount = document.getElementById('remainingCount');
   const progressBar = document.getElementById('progressBar');
+  const progressPercent = document.getElementById('progressPercent');
   const resultsDiv = document.getElementById('results');
   const statusLabel = document.getElementById('statusLabel');
 
@@ -51,7 +53,6 @@
   const exportTxtBtn = document.getElementById('exportTxtBtn');
   const saveLocalBtn = document.getElementById('saveLocalBtn');
   const loadLocalBtn = document.getElementById('loadLocalBtn');
-  const progressPercent = document.getElementById('progressPercent');
 
   // listeners
   startBtn.addEventListener('click', onStart);
@@ -95,6 +96,11 @@
   async function onStart(){
     const lines = (combosText.value||'').split(/\r?\n/).map(l=>l.trim()).filter(l=>l);
     if(lines.length===0){ showToast('Cole combos ou carregue um arquivo .txt (usuário:senha)', 'error'); return; }
+    
+    isProcessing = true;
+    startBtn.disabled = true;
+    stopBtn.disabled = false;
+    
     statusLabel.textContent = 'Carregando combos...';
     progressBar.style.width = '0%';
     allHits = [];
@@ -104,6 +110,14 @@
     // Simulação de carregamento com progresso de 0 a 100%
     const total = lines.length;
     for(let idx = 0; idx < total; idx++) {
+      // Verifica se foi solicitado parar
+      if(!isProcessing) {
+        statusLabel.textContent = 'Parado pelo usuário';
+        startBtn.disabled = false;
+        stopBtn.disabled = true;
+        return;
+      }
+      
       const ln = lines[idx];
       const [u,p] = ln.split(':').map(s=>s?.trim()||'');
       allHits.push({
@@ -128,16 +142,45 @@
       await sleep(15);
     }
     
-    allHits = allHits.reverse();
-    renderResults();
-    updateStats();
-    progressBar.style.width = '100%';
-    statusLabel.textContent = 'Pronto (visual)';
+    if(isProcessing) {
+      allHits = allHits.reverse();
+      renderResults();
+      updateStats();
+      progressBar.style.width = '100%';
+      statusLabel.textContent = 'Pronto (visual)';
+      isProcessing = false;
+      startBtn.disabled = false;
+      stopBtn.disabled = true;
+    }
   }
 
-  function onStop(){ statusLabel.textContent = 'Parado'; }
+  function onStop(){
+    if(!isProcessing) {
+      showToast('Nenhum processamento em andamento', 'info');
+      return;
+    }
+    isProcessing = false;
+    startBtn.disabled = false;
+    stopBtn.disabled = true;
+    statusLabel.textContent = 'Parado pelo usuário';
+    showToast('Processamento interrompido', 'info');
+  }
 
-  function onClear(){ allHits = []; combosText.value=''; resultsDiv.innerHTML=''; updateStats(); progressBar.style.width='0%'; progressPercent.textContent='0%'; localStorage.removeItem('pixelcode_hits'); showToast('Todos os dados foram limpos', 'success'); }
+  function onClear(){
+    if(isProcessing) {
+      showToast('Finalize o processamento antes de limpar', 'error');
+      return;
+    }
+    allHits = [];
+    combosText.value = '';
+    resultsDiv.innerHTML = '';
+    progressBar.style.width = '0%';
+    progressPercent.textContent = '0%';
+    statusLabel.textContent = 'Pronto';
+    updateStats();
+    localStorage.removeItem('pixelcode_hits');
+    showToast('Todos os dados foram limpos', 'success');
+  }
 
   function onCopyAll(){
     if(allHits.length===0){ showToast('Nenhum resultado para copiar', 'error'); return; }
@@ -235,5 +278,6 @@
   // initial
   resultsDiv.innerHTML = '<div class="small muted">Nenhum resultado gerado ainda. Cole ou carregue combos e clique em Iniciar (visual).</div>';
   updateStats();
+  stopBtn.disabled = true; // Inicialmente o botão de parar fica desabilitado
 
 })();
